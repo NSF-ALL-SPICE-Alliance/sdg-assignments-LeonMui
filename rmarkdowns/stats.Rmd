@@ -29,6 +29,10 @@ library(ggpubr)
 library(janitor)
 library(ggcorrplot)
 library(vembedr)
+
+# adding plotly package to create interactive graphs
+
+library(plotly)
 ```
 
 
@@ -197,14 +201,23 @@ To circle back and reinforce how the linear regression (line drawn through our s
   - What does this look like on scatter plot?
   
 ```{r, warning=FALSE, message=FALSE}
-ggplot(sdr_data, aes(x = goal_12_score, 
-                     y = goal_9_score)) +
+# changing the code chunk from SDG scores 9 and 12 to...
+
+linear_regression_of_sdg_3_and_8 <- ggplot(sdr_data, aes(x = goal_3_score, 
+                     y = goal_8_score, label = country)) +
   geom_point() +
   geom_smooth() +
   stat_cor() +
   theme_minimal() 
 
+# making the plot interactive
+
+ggplotly(linear_regression_of_sdg_3_and_8)
+
 ```
+
+Hypothesis: 
+There is a general positive correlation between the SDG 3 (Good Health and Well-Being) score and the SDG 8 (Decent Work and Economic Growth) score. With good health and well-being, it usually results in a stronger and healthier workforce, and vice versa (such as Singapore, Norway, and Australia). However, there are outliers in the countries such as South Sudan, Fiji, other countries in the Middle East (i.e. Lebanon, Iran, etc.), and regions in Oceania and Africa. The results may be linked imbalances in the countries' health and economy due to instability in the region or lack of access to healthcare resources. 
 
 ### <span style="color: red;">Challenge 1</span>
 
@@ -214,7 +227,7 @@ ggplot(sdr_data, aes(x = goal_12_score,
     
     - **Hint** to be able to tell which point is which country, you will have to add `label = country` in the aes function after you tell ggplot what you which scores you want on the x and y axis
      - **Hint** to use the ggplotly() function, you will need to use `library()` to load in the plotly package in the first code chunk in this R Markdown
-
+ 
   - in 4-6 sentences, come up with a hypotheses for the positive or negative correlation between the 2 goals
       
       - are there any points that don't follow the trend (outliers)
