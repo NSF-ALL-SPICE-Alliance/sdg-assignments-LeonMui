@@ -29,8 +29,8 @@ library(tidyverse) # most popular R package
 library(here) # cuts out long file paths when reading in data (makes reproducible)
 library(janitor) # cleans column names
 library(naniar) # analyzes missing data
-#library(missForest)
 library(cluster) 
+library(missForest)
 library(randomForest) # runs random forest algorithm
 library(missRanger) # imputes data through with random forest method
 library(factoextra) # visualizes clusters
@@ -217,7 +217,8 @@ fviz_nbclust(sdr_data_imputed, kmeans, method = "silhouette")
 The kmeans() function clusters countries into groups (int this case 2, visualized above) based on 84 SDG scores
 
 ```{r}
-k2 <- kmeans(sdr_data_imputed, centers = 2)
+# Edited k2 function to have 3 clusters
+k2 <- kmeans(sdr_data_imputed, centers = 3)
 ```
 
 
@@ -246,7 +247,8 @@ To answer this question, we train a random forest model to make predictions of m
 
 
 ```{r}
-rf_matmort <- randomForest(normalized_score_sdg3_matmort ~ .,
+# Edited to make a model of SDG 3 Obesity predictions
+sdg_2_obesity <- randomForest(normalized_score_sdg2_obesity ~ .,
                              data = sdr_data_imputed,
                              importance = TRUE)
 ```
@@ -257,14 +259,15 @@ The "% Var explained" value of 80.83 indicates that approximately 80.83% of the 
 
 
 ```{r}
-rf_matmort
+sdg_2_obesity
 ```
 
 Now we can look at the variables most important in making the predictions
 
 
 ```{r}
-importance_df <- as.data.frame(rf_matmort$importance)
+# edited for accuracy of new model
+importance_df <- as.data.frame(sdg_2_obesity$importance)
 ```
 
 Let's take the top 10 and graph them
@@ -276,10 +279,11 @@ importance_df_top_10 <- importance_df %>%
 ```
 
 ```{r}
+# edited for new model
 ggplot(importance_df_top_10, aes(x = `%IncMSE`, y = reorder(variable, `%IncMSE`))) +
   geom_bar(stat = "identity", fill = "steelblue", color = "black") +
   theme_minimal() +
-  labs(title = "Most Important Variables in Predicting Maternal Mortality",
+  labs(title = "Most Important Variables in Predicting Obesity",
        subtitle = "Top 10",
        y = "SDG Indicator",
        x = "Feature Importance (% Increase in Mean Squared Error)")
@@ -296,7 +300,8 @@ Lastly, we want to know how these important variables influence the prediction: 
 
 
 ```{r}
-pdp::partial(rf_matmort, pred.var = "normalized_score_sdg6_sanita", plot = TRUE)
+# edited for new model
+pdp::partial(rf_matmort, pred.var = "normalized_score_sdg7_cleanfuel", plot = TRUE)
 ```
 
 
@@ -315,7 +320,8 @@ Now that we saw how one variable influences the models prediction, how about 2 v
 
 
 ```{r}
-pd <- pdp::partial(rf_matmort, pred.var = c("normalized_score_sdg6_sanita", "normalized_score_sdg3_u5mort"))
+# edited for new model
+pd <- pdp::partial(rf_matmort, pred.var = c("normalized_score_sdg7_cleanfuel", "normalized_score_sdg3_tb"))
 # Default PDP
 plotPartial(pd)
 ```
